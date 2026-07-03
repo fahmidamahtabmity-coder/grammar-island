@@ -18,6 +18,18 @@
         <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#4cc5df"/><stop offset="1" stop-color="#0b7f9e"/>
         </linearGradient>
+        <!-- one spiky coconut frond; the crown reuses it rotated -->
+        <path id="frond" d="M0 0 C26 -18 60 -26 92 -16 L78 -8 L86 2 L64 -4 L70 8 L46 -2 L50 10 L28 0 L30 10 L12 1 L12 8 C6 4 2 2 0 0 Z"/>
+        <g id="crown">
+          <use href="#frond" transform="rotate(-8)"/>
+          <use href="#frond" transform="rotate(24) scale(.9)"/>
+          <use href="#frond" transform="rotate(56) scale(.78)"/>
+          <use href="#frond" transform="rotate(-40) scale(.95)"/>
+          <use href="#frond" transform="rotate(-72) scale(.82)"/>
+          <use href="#frond" transform="scale(-1 1) rotate(-6) scale(.95)"/>
+          <use href="#frond" transform="scale(-1 1) rotate(-38) scale(.85)"/>
+          <use href="#frond" transform="scale(-1 1) rotate(28) scale(.78)"/>
+        </g>
       </defs>
       <rect width="1200" height="800" fill="url(#sky)"/>
       <!-- sun -->
@@ -32,22 +44,23 @@
       <path d="M0 430 Q150 412 300 430 T600 430 T900 430 T1200 430 V468 Q1050 450 900 468 T600 468 T300 468 T0 468 Z" fill="#8fdcec" opacity=".55"/>
       <path d="M0 560 Q100 546 200 560 T400 560 T600 560 T800 560 T1000 560 T1200 560" stroke="#c8f1fa" stroke-width="6" fill="none" opacity=".32"/>
       <path d="M0 665 Q100 651 200 665 T400 665 T600 665 T800 665 T1000 665 T1200 665" stroke="#c8f1fa" stroke-width="6" fill="none" opacity=".22"/>
-      <!-- big island, bottom left -->
+      <!-- left island: bright twin coconut palms on a green mound -->
       <ellipse cx="160" cy="810" rx="340" ry="125" fill="#f2dfa7"/>
       <ellipse cx="160" cy="828" rx="340" ry="112" fill="#e6cd8c" opacity=".65"/>
-      <path d="M140 708 C130 662 114 626 90 596" stroke="#8a5a34" stroke-width="15" fill="none" stroke-linecap="round"/>
-      <path d="M90 596 C62 571 30 566 4 576 C36 586 62 591 92 601 Z" fill="#2f9e4f"/>
-      <path d="M90 596 C72 560 46 545 14 546 C46 561 68 576 88 599 Z" fill="#37b25c"/>
-      <path d="M90 596 C97 558 118 540 150 535 C124 556 108 576 94 599 Z" fill="#37b25c"/>
-      <path d="M90 596 C118 571 150 563 178 572 C150 584 120 591 92 601 Z" fill="#2f9e4f"/>
-      <circle cx="98" cy="610" r="9" fill="#7a4b28"/>
-      <circle cx="116" cy="606" r="9" fill="#7a4b28"/>
-      <!-- small island, bottom right -->
+      <g fill="#63bb3f">
+        <path d="M0 800 Q170 692 355 800 Z"/>
+        <path d="M200 798 C190 720 172 640 148 560 L128 566 C156 644 170 722 172 798 Z"/>
+        <path d="M280 798 C276 748 272 708 262 668 L246 672 C258 710 258 752 256 798 Z"/>
+        <use href="#crown" transform="translate(138 558) scale(1.05)"/>
+        <use href="#crown" transform="translate(254 664) scale(.55)"/>
+      </g>
+      <!-- right island: dark-trunk coconut palm with deep green crown -->
       <ellipse cx="1110" cy="812" rx="230" ry="85" fill="#f2dfa7"/>
-      <path d="M1102 762 C1097 732 1088 707 1072 686" stroke="#8a5a34" stroke-width="11" fill="none" stroke-linecap="round"/>
-      <path d="M1072 686 C1051 668 1028 664 1009 671 C1032 679 1051 683 1073 691 Z" fill="#2f9e4f"/>
-      <path d="M1072 686 C1077 660 1093 647 1116 644 C1096 660 1084 672 1075 691 Z" fill="#37b25c"/>
-      <path d="M1072 686 C1091 671 1114 667 1133 673 C1113 682 1093 685 1074 692 Z" fill="#2f9e4f"/>
+      <g>
+        <path d="M960 808 Q1100 754 1246 810 Q1160 794 1088 802 Q1016 812 960 808 Z" fill="#16324e"/>
+        <path d="M1112 804 C1102 730 1082 660 1052 600 L1034 610 C1064 668 1080 736 1082 804 Z" fill="#16324e"/>
+        <use href="#crown" transform="translate(1046 588) scale(.95)" fill="#1d6b45"/>
+      </g>
     </svg>
   </div>
   <div id="app" aria-live="polite"></div>
