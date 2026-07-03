@@ -233,6 +233,90 @@ h3 { font-size: 1.1rem; margin: 12px 0 6px; }
 .pc-table th { background: var(--sea-deep); color: #fff; }
 .pc-note { font-size: .92rem; opacity: .85; margin: 6px 0 10px; line-height: 1.45; }
 
+/* ---------- living background: letters → words → sentence ---------- */
+
+.letter-sky {
+  position: absolute; inset: 0; overflow: hidden;
+  pointer-events: none; z-index: 0;
+}
+.welcome, .map-screen { position: relative; overflow: hidden; }
+.welcome > *:not(.letter-sky), .map-screen > *:not(.letter-sky) { position: relative; z-index: 1; }
+
+.sky-letter {
+  position: absolute;
+  font-weight: 900; font-size: 1.5rem;
+  color: rgba(255, 255, 255, .8);
+  text-shadow: 0 2px 6px rgba(11, 127, 158, .5);
+  transition: left 2s ease-in-out, top 2s ease-in-out, opacity 1.4s;
+  animation: floaty 3.5s ease-in-out infinite alternate;
+}
+.sky-letter.gathered { animation: none; color: rgba(255, 255, 255, .95); }
+.sky-letter.fading { opacity: 0; }
+@keyframes floaty { from { transform: translateY(-8px) rotate(-4deg); } to { transform: translateY(8px) rotate(4deg); } }
+
+/* ---------- waves & bobbing ---------- */
+
+.wave-strip { overflow: hidden; margin: 14px -14px 0; opacity: .85; }
+.wave-strip span {
+  display: inline-block; white-space: nowrap;
+  font-size: 1.5rem; letter-spacing: -4px;
+  animation: waves-move 9s linear infinite;
+}
+@keyframes waves-move { from { transform: translateX(0); } to { transform: translateX(-25%); } }
+
+.bob { display: inline-block; animation: bob 3s ease-in-out infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+/* ---------- welcome screen ---------- */
+
+.welcome .welcome-sun { position: absolute; top: 12px; right: 20px; font-size: 3rem; animation: sun-glow 4s ease-in-out infinite; }
+@keyframes sun-glow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15) rotate(8deg); } }
+.welcome-title { font-size: 2.2rem; }
+
+/* ---------- map islands: sandy, palm-topped, bobbing ---------- */
+
+.island {
+  position: relative;
+  background: radial-gradient(circle at 50% 40%, #fdf3d8 0%, #fdf3d8 58%, #f7df9a 70%, #cdeef8 100%);
+  animation: island-bob 6s ease-in-out infinite;
+}
+@keyframes island-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.island .island-palm { position: absolute; top: -16px; left: 10px; font-size: 1.9rem; transform: rotate(-10deg); }
+.island .island-emoji { font-size: 3.4rem; filter: drop-shadow(0 4px 6px rgba(11, 60, 80, .25)); }
+.island.locked .island-palm { filter: grayscale(1); }
+
+/* ---------- island page hero: “you have landed!” ---------- */
+
+.island-hero { text-align: center; margin: 6px 0 4px; }
+.hero-scene { display: flex; justify-content: center; align-items: flex-end; gap: 6px; }
+.hero-emoji { font-size: 4.6rem; filter: drop-shadow(0 6px 10px rgba(11, 60, 80, .3)); }
+.hero-palm { font-size: 3rem; }
+.hero-palm-flip { transform: scaleX(-1); display: inline-block; }
+.island-hero h1 { margin: 2px 0 0; }
+.hero-waves { font-size: 1.2rem; letter-spacing: -3px; opacity: .8; }
+
+/* ---------- interactive “Your turn!” intro ---------- */
+
+.intro-box { margin-top: 14px; border-top: 3px dashed #f0dfae; padding-top: 12px; }
+.intro-prompt { font-weight: 800; font-size: 1.08rem; margin-bottom: 10px; }
+.intro-done-note { font-size: .9rem; color: var(--leaf); font-weight: 700; margin-bottom: 6px; }
+.intro-sentence { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.intro-chip.intro-found { background: #d3f6c8; border-color: var(--leaf); }
+.intro-chip.intro-fixed::after { content: ' ✨'; }
+.intro-labels { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.intro-tag {
+  background: #eef7ff; border: 2px solid var(--sea-deep); border-radius: 999px;
+  padding: 4px 12px; font-weight: 700; font-size: .95rem;
+  animation: pop-in .3s ease-out;
+}
+@keyframes pop-in { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.intro-celebrate { font-size: 1.15rem; font-weight: 800; color: var(--leaf); margin-top: 12px; animation: pop-in .4s ease-out; }
+.intro-article-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+.intro-article-slot { font-weight: 900; font-size: 1.2rem; min-width: 44px; text-align: center; border-bottom: 3px dashed var(--sea-deep); }
+.intro-article-slot.intro-found { color: var(--leaf); border-bottom-style: solid; border-bottom-color: var(--leaf); }
+.intro-article-word { font-size: 1.15rem; font-weight: 700; min-width: 120px; }
+.intro-article-btns { display: flex; gap: 6px; }
+
 /* ---------- small screens ---------- */
 
 @media (max-width: 480px) {

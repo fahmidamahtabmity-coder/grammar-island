@@ -49,12 +49,15 @@ window.GI = window.GI || {};
 
   function renderOnboarding() {
     app.innerHTML =
-      '<div class="screen center-screen">' +
-      '<div class="mascot-big">🦜</div>' +
-      '<h1>Ahoy, explorer!</h1>' +
+      '<div class="screen center-screen welcome" id="welcome-screen">' +
+      '<div class="welcome-sun" aria-hidden="true">☀️</div>' +
+      '<div class="mascot-big bob">🦜</div>' +
+      '<h1 class="welcome-title">Ahoy, explorer!</h1>' +
       '<p class="lead">I\'m your parrot guide. Together we will sail across the islands and become <b>Grammar Masters</b> — by playing games!</p>' +
       '<button class="btn btn-big" id="ob-next">Let\'s go! ⛵</button>' +
+      '<div class="wave-strip" aria-hidden="true"><span>🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊</span></div>' +
       '</div>';
+    GI.bg.mount(document.getElementById('welcome-screen'));
     document.getElementById('ob-next').addEventListener('click', renderOnboardingName);
   }
 
@@ -120,16 +123,17 @@ window.GI = window.GI || {};
   function renderMap() {
     var level = GI.CURRICULUM.levels[0];
     app.innerHTML = header(false) +
-      '<div class="screen">' +
+      '<div class="screen map-screen" id="map-screen">' +
       '<h1 class="map-title">' + level.emoji + ' ' + level.name + '</h1>' +
       '<div class="map">' +
-      level.islands.map(function (isl) {
+      level.islands.map(function (isl, idx) {
         var p = GI.island(isl.id);
         var unlocked = GI.isUnlocked(isl.id);
         var state = p.mastered ? 'done' : unlocked ? 'open' : 'locked';
         var icon = p.mastered ? '✅' : unlocked ? '▶️' : '🔒';
         var acc = p.answered ? Math.round(GI.rollingAccuracy(isl.id) * 100) + '%' : '—';
-        return '<button class="island ' + state + '" data-id="' + isl.id + '">' +
+        return '<button class="island ' + state + '" data-id="' + isl.id + '" style="animation-delay:' + (idx * 0.6) + 's">' +
+          '<span class="island-palm" aria-hidden="true">🌴</span>' +
           '<span class="island-emoji">' + isl.emoji + '</span>' +
           '<span class="island-name">' + isl.name + '</span>' +
           '<span class="island-tag">' + isl.tagline + '</span>' +
@@ -137,8 +141,10 @@ window.GI = window.GI || {};
           '</button>';
       }).join('') +
       '</div>' +
-      '<p class="map-more">🌊 More islands are being discovered… (coming in the next update!)</p>' +
+      '<div class="wave-strip" aria-hidden="true"><span>🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊</span></div>' +
+      '<p class="map-more">⛵ More islands are being discovered… (coming in the next update!)</p>' +
       '</div>';
+    GI.bg.mount(document.getElementById('map-screen'));
     wireHeader();
     Array.prototype.forEach.call(app.querySelectorAll('.island'), function (b) {
       b.addEventListener('click', function () {
@@ -166,7 +172,13 @@ window.GI = window.GI || {};
 
     app.innerHTML = header(true) +
       '<div class="screen">' +
-      '<h1>' + isl.emoji + ' ' + isl.name + '</h1>' +
+      '<div class="island-hero">' +
+      '<div class="hero-scene"><span class="hero-palm" aria-hidden="true">🌴</span>' +
+      '<span class="hero-emoji bob">' + isl.emoji + '</span>' +
+      '<span class="hero-palm hero-palm-flip" aria-hidden="true">🌴</span></div>' +
+      '<h1>' + isl.name + '</h1>' +
+      '<div class="hero-waves" aria-hidden="true">🌊🌊🌊🌊🌊🌊🌊🌊</div>' +
+      '</div>' +
 
       '<div class="rule-card">' +
       '<h2>📖 ' + isl.rule.title + '</h2>' +
@@ -175,7 +187,7 @@ window.GI = window.GI || {};
       '<p class="rule-note">' + isl.rule.exampleNote + '</p>' +
       '<button class="btn" id="rule-bangla">বাংলা hint 💡</button>' +
       '<p class="rule-bangla" id="rule-bangla-text" hidden>' + isl.rule.bangla + '</p>' +
-      (p.ruleRead ? '' : '<button class="btn btn-big" id="rule-read">I read it! Let\'s play ➜</button>') +
+      '<div class="intro-box" id="intro-box"></div>' +
       '</div>' +
 
       '<div class="game-grid">' +
@@ -191,7 +203,7 @@ window.GI = window.GI || {};
       '<div class="gate">' +
       '<h3>🗝️ Treasure checklist</h3>' +
       '<ul>' +
-      '<li>' + tick(s.ruleRead) + ' Read the rule</li>' +
+      '<li>' + tick(s.ruleRead) + ' Learn the rule (finish “Your turn!”)</li>' +
       '<li>' + tick(s.enoughTypes) + ' Play ' + M.MIN_GAME_TYPES + ' different games (' + s.types + '/' + M.MIN_GAME_TYPES + ')</li>' +
       '<li>' + tick(s.enoughQuestions) + ' Answer ' + M.MIN_QUESTIONS + ' questions (' + s.answered + '/' + M.MIN_QUESTIONS + ')</li>' +
       '<li>' + tick(s.accurate) + ' Get ' + Math.round(M.MIN_ACCURACY * 100) + '% right (now: ' + Math.round(s.accuracy * 100) + '%)</li>' +
@@ -208,18 +220,102 @@ window.GI = window.GI || {};
       var t = document.getElementById('rule-bangla-text');
       t.hidden = !t.hidden;
     });
-    var rr = document.getElementById('rule-read');
-    if (rr) rr.addEventListener('click', function () {
-      p.ruleRead = true;
-      GI.save();
-      GI.sfx.correct();
-      renderIsland(id);
+    renderIntro(isl, document.getElementById('intro-box'), p.ruleRead, function () {
+      if (!p.ruleRead) {
+        p.ruleRead = true;
+        GI.save();
+        GI.sfx.win();
+        setTimeout(function () { renderIsland(id); }, 1200);
+      }
     });
     Array.prototype.forEach.call(app.querySelectorAll('.game-tile'), function (b) {
       b.addEventListener('click', function () { renderGame(id, b.dataset.g); });
     });
     var boss = document.getElementById('go-boss');
     if (boss && GI.bossReady(id)) boss.addEventListener('click', function () { renderBoss(id); });
+  }
+
+  /* ---------- the interactive "Your turn!" rule intro ---------- */
+
+  function renderIntro(isl, box, alreadyDone, onComplete) {
+    var intro = isl.intro;
+    if (!intro) { onComplete(); return; }
+    var doneNote = alreadyDone ? '<p class="intro-done-note">✅ You already did this — play it again if you like!</p>' : '';
+
+    function celebrate() {
+      var c = document.createElement('p');
+      c.className = 'intro-celebrate';
+      c.textContent = '🦜 ' + (alreadyDone ? 'Still got it! ⭐' : 'YES! You understood the rule — the games are open! 🎉');
+      box.appendChild(c);
+      onComplete();
+    }
+
+    if (intro.type === 'tap-words' || intro.type === 'tap-fix') {
+      var found = {};
+      var need = Object.keys(intro.targets).length;
+      box.innerHTML = doneNote + '<p class="intro-prompt">✨ ' + intro.prompt + '</p>' +
+        '<div class="intro-sentence">' +
+        intro.sentence.map(function (w, i) {
+          return '<button class="chip intro-chip" data-i="' + i + '">' + w + '</button>';
+        }).join('') + '</div><div class="intro-labels" id="intro-labels"></div>';
+      Array.prototype.forEach.call(box.querySelectorAll('.intro-chip'), function (chip) {
+        chip.addEventListener('click', function () {
+          var i = chip.dataset.i;
+          if (found[i]) return;
+          if (intro.targets[i] !== undefined) {
+            found[i] = true;
+            chip.classList.add('intro-found');
+            GI.sfx.correct();
+            if (intro.type === 'tap-fix') {
+              chip.textContent = intro.targets[i];           // the capital appears!
+              chip.classList.add('intro-fixed');
+            } else {
+              var tag = document.createElement('span');
+              tag.className = 'intro-tag';
+              tag.textContent = chip.textContent.replace(/[.,]$/, '') + ' = ' + intro.targets[i];
+              document.getElementById('intro-labels').appendChild(tag);
+            }
+            if (Object.keys(found).length === need) celebrate();
+          } else {
+            GI.sfx.wrong();
+            chip.classList.add('shake');
+            setTimeout(function () { chip.classList.remove('shake'); }, 450);
+          }
+        });
+      });
+    }
+
+    if (intro.type === 'pick-article') {
+      var solved = 0;
+      box.innerHTML = doneNote + '<p class="intro-prompt">✨ ' + intro.prompt + '</p>' +
+        intro.items.map(function (item, ri) {
+          return '<div class="intro-article-row" data-r="' + ri + '">' +
+            '<span class="intro-article-slot" id="ia-slot-' + ri + '">___</span>' +
+            '<span class="intro-article-word">' + item.word + ' ' + item.emoji + '</span>' +
+            '<span class="intro-article-btns">' +
+            ['a', 'an', 'the'].map(function (art) {
+              return '<button class="btn btn-small ia-btn" data-r="' + ri + '" data-a="' + art + '">' + art + '</button>';
+            }).join('') + '</span></div>';
+        }).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('.ia-btn'), function (b) {
+        b.addEventListener('click', function () {
+          var ri = Number(b.dataset.r);
+          var slot = document.getElementById('ia-slot-' + ri);
+          if (slot.classList.contains('intro-found')) return;
+          if (b.dataset.a === intro.items[ri].a) {
+            GI.sfx.correct();
+            slot.textContent = intro.items[ri].a;
+            slot.classList.add('intro-found');
+            solved++;
+            if (solved === intro.items.length) celebrate();
+          } else {
+            GI.sfx.wrong();
+            b.classList.add('shake');
+            setTimeout(function () { b.classList.remove('shake'); }, 450);
+          }
+        });
+      });
+    }
   }
 
   /* ---------- playing one game ---------- */

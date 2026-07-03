@@ -24,6 +24,12 @@ GI.CURRICULUM = {
             exampleNote: 'Amina = person · cat = animal · school = place',
             bangla: 'Noun হলো নামের শব্দ — মানুষ, জায়গা, প্রাণী বা জিনিসের নাম। যেমন: Amina (মানুষ), school (জায়গা), cat (প্রাণী), book (জিনিস)।'
           },
+          intro: {
+            type: 'tap-words',
+            prompt: 'Your turn! Tap all 3 naming words in this sentence:',
+            sentence: ['Amina', 'took', 'her', 'cat', 'to', 'school.'],
+            targets: { 0: 'person 🧑', 3: 'animal 🐈', 5: 'place 🏫' }
+          },
           games: ['catch', 'sort', 'build', 'quiz']
         },
         {
@@ -37,6 +43,12 @@ GI.CURRICULUM = {
             example: '<b>Amina</b> is a girl. <b>Dhaka</b> is a city.',
             exampleNote: 'Amina, Dhaka = proper (capital) · girl, city = common',
             bangla: 'Proper noun হলো কোনো একজনের বা এক জায়গার বিশেষ নাম — সবসময় বড় হাতের অক্ষরে (capital letter) শুরু হয়। যেমন: Amina, Dhaka। Common noun হলো সাধারণ নাম — যেমন: girl, city।'
+          },
+          intro: {
+            type: 'tap-fix',
+            prompt: 'Oh no — 2 special names lost their capital letters! Tap them to fix them:',
+            sentence: ['amina', 'lives', 'in', 'dhaka.'],
+            targets: { 0: 'Amina', 3: 'Dhaka.' }
           },
           games: ['catch', 'sort', 'build', 'quiz']
         },
@@ -52,6 +64,12 @@ GI.CURRICULUM = {
             exampleNote: 'She = Amina (we did not say “Amina” twice)',
             bangla: 'Pronoun হলো noun-এর বদলে বসা শব্দ, যাতে একই নাম বারবার বলতে না হয়। যেমন: he, she, it, we, they। “Amina lost her pen. She is sad.” — এখানে She মানে Amina।'
           },
+          intro: {
+            type: 'tap-words',
+            prompt: 'Your turn! One word below is standing in for “Amina” — tap it:',
+            sentence: ['Amina', 'lost', 'her', 'pen.', 'She', 'is', 'sad.'],
+            targets: { 4: 'She = Amina! 🙋' }
+          },
           games: ['catch', 'sort', 'build', 'quiz']
         },
         {
@@ -65,6 +83,15 @@ GI.CURRICULUM = {
             example: '<b>a</b> mango · <b>an</b> egg · <b>the</b> sun',
             exampleNote: 'mango starts with “m” → a · egg starts with “e” → an · there is only one sun → the',
             bangla: 'Consonant ধ্বনির আগে “a” (a mango), vowel ধ্বনির (a, e, i, o, u) আগে “an” (an egg)। আর যে জিনিসটা নির্দিষ্ট — যেটা আমরা দুজনেই চিনি — তার আগে “the” (the sun)।'
+          },
+          intro: {
+            type: 'pick-article',
+            prompt: 'Your turn! Pick the right little word for each one:',
+            items: [
+              { word: 'egg', emoji: '🥚', a: 'an' },
+              { word: 'mango', emoji: '🥭', a: 'a' },
+              { word: 'sun', emoji: '☀️', a: 'the' }
+            ]
           },
           games: ['sort', 'build', 'quiz', 'gap']
         }
