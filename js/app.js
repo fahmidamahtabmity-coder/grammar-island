@@ -55,7 +55,6 @@ window.GI = window.GI || {};
       '<h1 class="welcome-title">Ahoy, explorer!</h1>' +
       '<p class="lead">I\'m your parrot guide. Together we will sail across the islands and become <b>Grammar Masters</b> — by playing games!</p>' +
       '<button class="btn btn-big" id="ob-next">Let\'s go! ⛵</button>' +
-      '<div class="wave-strip" aria-hidden="true"><span>🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊</span></div>' +
       '</div>';
     GI.bg.mount(document.getElementById('welcome-screen'));
     document.getElementById('ob-next').addEventListener('click', renderOnboardingName);
@@ -133,7 +132,6 @@ window.GI = window.GI || {};
         var icon = p.mastered ? '✅' : unlocked ? '▶️' : '🔒';
         var acc = p.answered ? Math.round(GI.rollingAccuracy(isl.id) * 100) + '%' : '—';
         return '<button class="island ' + state + '" data-id="' + isl.id + '" style="animation-delay:' + (idx * 0.6) + 's">' +
-          '<span class="island-palm" aria-hidden="true">🌴</span>' +
           '<span class="island-emoji">' + isl.emoji + '</span>' +
           '<span class="island-name">' + isl.name + '</span>' +
           '<span class="island-tag">' + isl.tagline + '</span>' +
@@ -141,7 +139,6 @@ window.GI = window.GI || {};
           '</button>';
       }).join('') +
       '</div>' +
-      '<div class="wave-strip" aria-hidden="true"><span>🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊</span></div>' +
       '<p class="map-more">⛵ More islands are being discovered… (coming in the next update!)</p>' +
       '</div>';
     GI.bg.mount(document.getElementById('map-screen'));
@@ -173,11 +170,8 @@ window.GI = window.GI || {};
     app.innerHTML = header(true) +
       '<div class="screen">' +
       '<div class="island-hero">' +
-      '<div class="hero-scene"><span class="hero-palm" aria-hidden="true">🌴</span>' +
-      '<span class="hero-emoji bob">' + isl.emoji + '</span>' +
-      '<span class="hero-palm hero-palm-flip" aria-hidden="true">🌴</span></div>' +
+      '<div class="hero-scene"><span class="hero-emoji bob">' + isl.emoji + '</span></div>' +
       '<h1>' + isl.name + '</h1>' +
-      '<div class="hero-waves" aria-hidden="true">🌊🌊🌊🌊🌊🌊🌊🌊</div>' +
       '</div>' +
 
       '<div class="rule-card">' +

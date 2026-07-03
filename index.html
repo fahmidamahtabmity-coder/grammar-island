@@ -8,6 +8,48 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <!-- the island world: a fixed vector scene behind every screen -->
+  <div id="scene" aria-hidden="true">
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#cdeff9"/><stop offset="1" stop-color="#9fdff0"/>
+        </linearGradient>
+        <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#4cc5df"/><stop offset="1" stop-color="#0b7f9e"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="800" fill="url(#sky)"/>
+      <!-- sun -->
+      <circle cx="1040" cy="110" r="95" fill="#ffd25e" opacity=".22"/>
+      <circle cx="1040" cy="110" r="58" fill="#ffd25e" opacity=".9"/>
+      <!-- clouds -->
+      <ellipse cx="250" cy="120" rx="95" ry="26" fill="#ffffff" opacity=".7"/>
+      <ellipse cx="320" cy="142" rx="70" ry="20" fill="#ffffff" opacity=".5"/>
+      <ellipse cx="740" cy="85" rx="85" ry="22" fill="#ffffff" opacity=".55"/>
+      <!-- the sea -->
+      <rect y="430" width="1200" height="370" fill="url(#sea)"/>
+      <path d="M0 430 Q150 412 300 430 T600 430 T900 430 T1200 430 V468 Q1050 450 900 468 T600 468 T300 468 T0 468 Z" fill="#8fdcec" opacity=".55"/>
+      <path d="M0 560 Q100 546 200 560 T400 560 T600 560 T800 560 T1000 560 T1200 560" stroke="#c8f1fa" stroke-width="6" fill="none" opacity=".32"/>
+      <path d="M0 665 Q100 651 200 665 T400 665 T600 665 T800 665 T1000 665 T1200 665" stroke="#c8f1fa" stroke-width="6" fill="none" opacity=".22"/>
+      <!-- big island, bottom left -->
+      <ellipse cx="160" cy="810" rx="340" ry="125" fill="#f2dfa7"/>
+      <ellipse cx="160" cy="828" rx="340" ry="112" fill="#e6cd8c" opacity=".65"/>
+      <path d="M140 708 C130 662 114 626 90 596" stroke="#8a5a34" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <path d="M90 596 C62 571 30 566 4 576 C36 586 62 591 92 601 Z" fill="#2f9e4f"/>
+      <path d="M90 596 C72 560 46 545 14 546 C46 561 68 576 88 599 Z" fill="#37b25c"/>
+      <path d="M90 596 C97 558 118 540 150 535 C124 556 108 576 94 599 Z" fill="#37b25c"/>
+      <path d="M90 596 C118 571 150 563 178 572 C150 584 120 591 92 601 Z" fill="#2f9e4f"/>
+      <circle cx="98" cy="610" r="9" fill="#7a4b28"/>
+      <circle cx="116" cy="606" r="9" fill="#7a4b28"/>
+      <!-- small island, bottom right -->
+      <ellipse cx="1110" cy="812" rx="230" ry="85" fill="#f2dfa7"/>
+      <path d="M1102 762 C1097 732 1088 707 1072 686" stroke="#8a5a34" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <path d="M1072 686 C1051 668 1028 664 1009 671 C1032 679 1051 683 1073 691 Z" fill="#2f9e4f"/>
+      <path d="M1072 686 C1077 660 1093 647 1116 644 C1096 660 1084 672 1075 691 Z" fill="#37b25c"/>
+      <path d="M1072 686 C1091 671 1114 667 1133 673 C1113 682 1093 685 1074 692 Z" fill="#2f9e4f"/>
+    </svg>
+  </div>
   <div id="app" aria-live="polite"></div>
 
   <!-- data -->
