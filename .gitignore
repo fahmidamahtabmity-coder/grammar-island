@@ -1,0 +1,5 @@
+# nothing secret exists in this static prototype yet, but keep the habit:
+.env
+*.local
+Thumbs.db
+.DS_Store
