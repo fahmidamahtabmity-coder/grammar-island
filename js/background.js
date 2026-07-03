@@ -1,6 +1,8 @@
-/* Grammar Island — living background: letters drift in the sky, gather into
-   words, the words slide together into a sentence, then it dissolves and a new
-   one begins. Mounted on the welcome screen and the map. */
+/* Grammar Island — living background, in three slow acts:
+   Act 1: letters float slowly across the sky.
+   Act 2: they gather into WORDS — each word forming in its own spot.
+   Act 3: the words sail together into one SENTENCE, shine, then dissolve.
+   Mounted on the welcome screen and the map. */
 
 window.GI = window.GI || {};
 
@@ -21,12 +23,13 @@ window.GI = window.GI || {};
       sky.className = 'letter-sky';
       sky.setAttribute('aria-hidden', 'true');
       parent.appendChild(sky);
-      var mySeq = ++seq;          // any newer mount cancels this one
-      cycle(sky, mySeq, 0);
+      var mySeq = ++seq;                 // a newer mount cancels this one
+      cycle(sky, mySeq, Math.floor(Math.random() * SENTENCES.length));
     }
   };
 
   function alive(sky, mySeq) { return mySeq === seq && document.contains(sky); }
+  function rand(a, b) { return a + Math.random() * (b - a); }
 
   function cycle(sky, mySeq, idx) {
     if (!alive(sky, mySeq)) return;
@@ -35,61 +38,86 @@ window.GI = window.GI || {};
     var words = sentence.split(' ');
     var W = sky.clientWidth || 600;
     var H = sky.clientHeight || 400;
-    var CH = Math.min(26, Math.max(18, W / 26));   // letter cell width, px
+    var CH = Math.min(26, Math.max(18, W / 26));      // letter cell width, px
 
-    /* target layout: words on one line, first far apart, later close together */
-    function layout(gapPx) {
-      var totalLetters = sentence.replace(/ /g, '').length;
-      var width = totalLetters * CH + (words.length - 1) * gapPx;
-      var x = Math.max(10, (W - width) / 2);
-      var y = H * 0.16;
-      var pos = [];
-      words.forEach(function (word) {
-        for (var i = 0; i < word.length; i++) { pos.push([x, y]); x += CH; }
-        x += gapPx;
-      });
-      return pos;
-    }
-
-    /* create letters scattered randomly */
+    /* letters, scattered over the whole sky */
     var letters = [];
     sentence.replace(/ /g, '').split('').forEach(function (ch) {
       var el = document.createElement('span');
       el.className = 'sky-letter';
       el.textContent = ch;
-      el.style.left = (Math.random() * (W - 30)) + 'px';
-      el.style.top = (Math.random() * (H - 40)) + 'px';
-      el.style.transitionDelay = (Math.random() * 0.6) + 's';
+      el.style.left = rand(0, W - 30) + 'px';
+      el.style.top = rand(0, H - 40) + 'px';
       sky.appendChild(el);
       letters.push(el);
     });
 
-    /* phase 1: drift freely (CSS float animation), then… */
+    /* Act 1 — drift slowly across the sky (long, gentle, sideways) */
     setTimeout(function () {
       if (!alive(sky, mySeq)) return;
-      /* phase 2: gather into separate words */
-      var pos = layout(CH * 2.2);
-      letters.forEach(function (el, i) {
-        el.classList.add('gathered');
-        el.style.left = pos[i][0] + 'px';
-        el.style.top = pos[i][1] + 'px';
+      letters.forEach(function (el) {
+        el.style.transitionDuration = '7s';
+        el.style.transitionTimingFunction = 'linear';
+        var drift = rand(0.12, 0.22) * W * (Math.random() < 0.5 ? -1 : 1);
+        var x = Math.min(W - 30, Math.max(0, parseFloat(el.style.left) + drift));
+        var y = Math.min(H - 40, Math.max(0, parseFloat(el.style.top) + rand(-40, 40)));
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
       });
-      setTimeout(function () {
-        if (!alive(sky, mySeq)) return;
-        /* phase 3: words slide together into a sentence */
-        var pos2 = layout(CH * 0.7);
-        letters.forEach(function (el, i) {
+    }, 60);
+
+    /* Act 2 — gather into words, each word in its own spot */
+    setTimeout(function () {
+      if (!alive(sky, mySeq)) return;
+      var spots = [                       // lower half of the sky = open sea, nothing hides the words
+        [0.10, 0.52], [0.55, 0.58], [0.15, 0.78], [0.58, 0.84]
+      ].sort(function () { return Math.random() - 0.5; });
+      var li = 0;
+      words.forEach(function (word, wi) {
+        var spot = spots[wi % spots.length];
+        var wWidth = word.length * CH;
+        var x = Math.min(W - wWidth - 10, Math.max(10, spot[0] * W + rand(-20, 20)));
+        var y = Math.min(H - 50, Math.max(10, spot[1] * H + rand(-12, 12)));
+        for (var i = 0; i < word.length; i++) {
+          var el = letters[li++];
+          el.classList.add('gathered');
+          el.style.transitionDuration = '2.8s';
+          el.style.transitionTimingFunction = 'ease-in-out';
+          el.style.transitionDelay = (i * 0.12) + 's';   // letters arrive one by one
+          el.style.left = (x + i * CH) + 'px';
+          el.style.top = y + 'px';
+        }
+      });
+    }, 6500);
+
+    /* Act 3 — the words sail together into one sentence */
+    setTimeout(function () {
+      if (!alive(sky, mySeq)) return;
+      var gap = CH * 0.7;
+      var totalLetters = sentence.replace(/ /g, '').length;
+      var width = totalLetters * CH + (words.length - 1) * gap;
+      var x = Math.max(10, (W - width) / 2);
+      var y = H * 0.68;
+      var li = 0;
+      words.forEach(function (word) {
+        for (var i = 0; i < word.length; i++) {
+          var el = letters[li++];
+          el.classList.add('sentence');
           el.style.transitionDelay = '0s';
-          el.style.left = pos2[i][0] + 'px';
-          el.style.top = pos2[i][1] + 'px';
-        });
-        setTimeout(function () {
-          if (!alive(sky, mySeq)) return;
-          /* phase 4: fade away, then next sentence */
-          letters.forEach(function (el) { el.classList.add('fading'); });
-          setTimeout(function () { cycle(sky, mySeq, idx + 1); }, 1600);
-        }, 2600);
-      }, 2600);
-    }, 2800);
+          el.style.transitionDuration = '2.6s';
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          x += CH;
+        }
+        x += gap;
+      });
+    }, 12500);
+
+    /* dissolve, then a new sentence begins */
+    setTimeout(function () {
+      if (!alive(sky, mySeq)) return;
+      letters.forEach(function (el) { el.classList.add('fading'); });
+      setTimeout(function () { cycle(sky, mySeq, idx + 1); }, 1800);
+    }, 17500);
   }
 })();
