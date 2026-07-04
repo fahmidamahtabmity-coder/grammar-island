@@ -47,8 +47,36 @@ GI.checkMastery = function (islandId) {
   var p = GI.island(islandId);
   var was = p.mastered;
   p.mastered = s.ruleRead && s.enoughQuestions && s.enoughTypes && s.accurate && s.bossPassed;
-  if (p.mastered && !was) { GI.state.xp += 100; GI.save(); }
+  if (p.mastered && !was) {
+    GI.addXP(100);
+    /* start the spaced-repetition schedule: review in 2 days, then 7, then 30 */
+    p.review = { stage: 0, nextAt: Date.now() + GI.REVIEW_DAYS[0] * 86400000 };
+    GI.save();
+  }
   return p.mastered;
+};
+
+/* ---- spaced-repetition review visits ("pirates returned!") ---- */
+
+GI.REVIEW_DAYS = [2, 7, 30];         // ⚙ intervals between reviews
+GI.REVIEW_PASS = 6;                  // ⚙ pass mark out of REVIEW_COUNT
+GI.REVIEW_COUNT = 8;
+
+GI.reviewDue = function (islandId) {
+  var p = GI.island(islandId);
+  return !!(p.mastered && p.review && Date.now() >= p.review.nextAt);
+};
+
+GI.recordReviewResult = function (islandId, passed) {
+  var p = GI.island(islandId);
+  if (!p.review) return;
+  if (passed) {
+    p.review.stage = Math.min(p.review.stage + 1, GI.REVIEW_DAYS.length - 1);
+    p.review.nextAt = Date.now() + GI.REVIEW_DAYS[p.review.stage] * 86400000;
+    GI.addXP(50);
+  }
+  /* on a miss the island simply stays due — retry any time, no punishment */
+  GI.save();
 };
 
 /* An island is unlocked if it is first in its level or the previous one is mastered. */

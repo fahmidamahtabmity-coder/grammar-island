@@ -22,11 +22,14 @@ window.GI = window.GI || {};
 
   function header(showBack, backFn) {
     var p = GI.state.player;
+    var streak = GI.state.streak.count;
     return '<header class="topbar">' +
       (showBack ? '<button class="btn btn-icon" id="nav-back" aria-label="Back">⬅️</button>' : '<span></span>') +
       '<span class="topbar-player">' + p.avatar + ' ' + esc(p.name) + '</span>' +
       '<span class="topbar-right">' +
+      (streak > 0 ? '<span class="streak" title="Day streak">🔥 ' + streak + '</span>' : '') +
       '<span class="xp" title="Explorer points">⭐ ' + GI.state.xp + '</span>' +
+      '<button class="btn btn-icon" id="nav-book" aria-label="My Grammar Book">📖</button>' +
       '<button class="btn btn-icon" id="nav-badges" aria-label="My badges">🎖️</button>' +
       '<button class="btn btn-icon" id="nav-mute" aria-label="Sound on or off">' + (GI.state.settings.muted ? '🔇' : '🔊') + '</button>' +
       '<button class="btn btn-icon" id="nav-parent" aria-label="Parent corner">👨‍👩‍👧</button>' +
@@ -36,6 +39,7 @@ window.GI = window.GI || {};
   function wireHeader(backFn) {
     var back = document.getElementById('nav-back');
     if (back) back.addEventListener('click', backFn || renderMap);
+    document.getElementById('nav-book').addEventListener('click', renderBook);
     document.getElementById('nav-badges').addEventListener('click', renderBadges);
     document.getElementById('nav-parent').addEventListener('click', renderParentGate);
     document.getElementById('nav-mute').addEventListener('click', function () {
@@ -44,6 +48,27 @@ window.GI = window.GI || {};
       this.textContent = GI.state.settings.muted ? '🔇' : '🔊';
     });
   }
+
+  /* ---------- toasts: celebrations that float up from the mascot ---------- */
+
+  function toast(text) {
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(function () { el.classList.add('gone'); }, 3400);
+    setTimeout(function () { el.remove(); }, 4200);
+  }
+
+  GI.notify = function (ev) {
+    if (ev.type === 'streak') {
+      if (ev.event === 'up') { toast('🔥 ' + ev.count + '-day streak! You came back — brilliant!'); GI.sfx.win(); }
+      else if (ev.event === 'shield') { toast('🛡️ Streak shield used — your ' + ev.count + '-day flame is safe!'); }
+      else if (ev.event === 'start') { toast('🔥 Streak started — come back tomorrow to grow it!'); }
+      else if (ev.event === 'restart') { toast('🔥 New streak begins today — you\'ve got this!'); }
+    }
+    if (ev.type === 'goal') { toast('⭐ Daily goal reached! Amazing work — anything more is bonus treasure!'); GI.sfx.badge(); }
+  };
 
   /* ---------- onboarding ---------- */
 
@@ -113,8 +138,114 @@ window.GI = window.GI || {};
       if (p1 !== p2) { msg.textContent = 'The two PINs do not match — try again.'; return; }
       GI.setPin(p1);
       GI.sfx.win();
-      renderMap();
+      renderOnboardingChoice();
     });
+  }
+
+  function renderOnboardingChoice() {
+    app.innerHTML =
+      '<div class="screen center-screen">' +
+      '<div class="mascot-big">🧭</div>' +
+      '<h2>Where should the adventure begin?</h2>' +
+      '<p class="lead">The Captain\'s Compass can ask a few quick questions to find the right starting island — or you can simply start at the beginning.</p>' +
+      '<button class="btn btn-big" id="ob-compass">🧭 Let the Compass find my island!</button><br>' +
+      '<button class="btn" id="ob-skip" style="margin-top:12px">⛵ Start from the first island</button>' +
+      '</div>';
+    document.getElementById('ob-compass').addEventListener('click', renderCompass);
+    document.getElementById('ob-skip').addEventListener('click', renderMap);
+  }
+
+  /* ---------- the Captain's Compass: adaptive placement, no visible failure ---------- */
+
+  function renderCompass() {
+    app.innerHTML =
+      '<div class="screen center-screen">' +
+      '<div class="mascot-big bob">🧭</div>' +
+      '<h2>The Captain\'s Compass</h2>' +
+      '<p class="lead">Answer the captain\'s questions so the compass knows which island to sail to first. Just do your best — brave explorers try everything!</p>' +
+      '<button class="btn btn-big" id="cp-start">Spin the compass! 🌀</button>' +
+      '</div>';
+    document.getElementById('cp-start').addEventListener('click', runCompass);
+  }
+
+  function runCompass() {
+    var islands = GI.allIslands();
+    var pos = Math.floor(islands.length / 2);
+    var asked = 0, MAXQ = 12;
+    var used = {};
+    var results = {};   // islandId -> {right, wrong}
+    var trail = [];     // positions visited, to detect bouncing
+
+    function pickQuestion(isl) {
+      var ids = (isl.gate || []).filter(function (id) { return !used[id]; });
+      var q = null;
+      if (ids.length) q = GI.findQuestion(isl.id, ids[0]);
+      if (!q) {
+        var pool = (GI.BANKS[isl.id].mcq || []).concat(GI.BANKS[isl.id].gap || [])
+          .filter(function (x) { return !used[x.id]; });
+        q = pool[Math.floor(Math.random() * pool.length)] || null;
+      }
+      if (q) used[q.id] = true;
+      return q;
+    }
+
+    function bouncing() {
+      if (trail.length < 4) return false;
+      var last = trail.slice(-4);
+      return last[0] === last[2] && last[1] === last[3] && last[0] !== last[1];
+    }
+
+    function finish() {
+      var recIndex = pos;
+      var rec = islands[recIndex];
+      var weak = islands.filter(function (isl, i) {
+        return i <= recIndex && results[isl.id] && results[isl.id].wrong > 0;
+      }).map(function (isl) { return isl.id; });
+      GI.state.compass = { recommendedId: rec.id, weakIds: weak, at: new Date().toISOString(), applied: false };
+      GI.save();
+      GI.sfx.badge();
+      app.innerHTML =
+        '<div class="screen center-screen">' +
+        '<div class="mascot-big">🧭</div>' +
+        '<h2>The compass points to…</h2>' +
+        '<div class="compass-result">' + rec.emoji + '<br>' + rec.name + '!</div>' +
+        '<p class="lead">Great exploring! Ask a grown-up to open the <b>Parent Corner 👨‍👩‍👧</b> — the captain has a message for them about your starting island.</p>' +
+        '<button class="btn btn-big" id="cp-map">To the map! 🗺️</button>' +
+        '</div>';
+      document.getElementById('cp-map').addEventListener('click', renderMap);
+    }
+
+    function next() {
+      if (asked >= MAXQ || (asked >= 8 && bouncing())) return finish();
+      var isl = islands[pos];
+      var q = pickQuestion(isl);
+      if (!q) return finish();
+      var order = q.opts.map(function (_, i) { return i; }).sort(function () { return Math.random() - 0.5; });
+      app.innerHTML =
+        '<div class="screen"><h2>🧭 The Captain\'s Compass</h2>' +
+        '<div class="quiz-q">' + q.q + '</div>' +
+        '<div class="quiz-opts">' +
+        order.map(function (oi) { return '<button class="btn quiz-opt" data-oi="' + oi + '">' + q.opts[oi] + '</button>'; }).join('') +
+        '</div><div class="sort-progress">Question ' + (asked + 1) + '</div></div>';
+      Array.prototype.forEach.call(app.querySelectorAll('.quiz-opt'), function (b) {
+        b.addEventListener('click', function () {
+          var ok = Number(b.dataset.oi) === q.a;
+          results[isl.id] = results[isl.id] || { right: 0, wrong: 0 };
+          if (ok) results[isl.id].right++; else results[isl.id].wrong++;
+          GI.sfx.tap();
+          asked++;
+          trail.push(pos);
+          pos = ok ? Math.min(pos + 1, islands.length - 1) : Math.max(pos - 1, 0);
+          /* neutral feedback — the compass never says right or wrong */
+          var note = document.createElement('p');
+          note.className = 'compass-note';
+          note.textContent = '⚓ Noted, explorer!';
+          app.querySelector('.screen').appendChild(note);
+          setTimeout(next, 650);
+        }, { once: true });
+      });
+    }
+    next();
   }
 
   /* ---------- the island map ---------- */
@@ -128,17 +259,20 @@ window.GI = window.GI || {};
       level.islands.map(function (isl, idx) {
         var p = GI.island(isl.id);
         var unlocked = GI.isUnlocked(isl.id);
-        var state = p.mastered ? 'done' : unlocked ? 'open' : 'locked';
-        var icon = p.mastered ? '✅' : unlocked ? '▶️' : '🔒';
+        var due = GI.reviewDue(isl.id);
+        var state = due ? 'due' : p.mastered ? 'done' : unlocked ? 'open' : 'locked';
+        var icon = due ? '❗' : p.mastered ? '✅' : unlocked ? '▶️' : '🔒';
         var acc = p.answered ? Math.round(GI.rollingAccuracy(isl.id) * 100) + '%' : '—';
+        var label = due ? ' Pirates returned!' : p.mastered ? ' Mastered!' : unlocked ? ' ' + p.answered + ' answers · ' + acc : ' Locked';
         return '<button class="island ' + state + '" data-id="' + isl.id + '" style="animation-delay:' + (idx * 0.6) + 's">' +
           '<span class="island-emoji">' + isl.emoji + '</span>' +
           '<span class="island-name">' + isl.name + '</span>' +
           '<span class="island-tag">' + isl.tagline + '</span>' +
-          '<span class="island-state">' + icon + (p.mastered ? ' Mastered!' : unlocked ? ' ' + p.answered + ' answers · ' + acc : ' Locked') + '</span>' +
+          '<span class="island-state">' + icon + label + '</span>' +
           '</button>';
       }).join('') +
       '</div>' +
+      goalPill() +
       '<p class="map-more">⛵ More islands are being discovered… (coming in the next update!)</p>' +
       '</div>';
     GI.bg.mount(document.getElementById('map-screen'));
@@ -157,6 +291,15 @@ window.GI = window.GI || {};
     });
   }
 
+  function goalPill() {
+    var t = GI.state.today;
+    var xpToday = (t.day === GI.todayStr()) ? t.xp : 0;
+    var goal = GI.state.settings.goalXP;
+    var done = xpToday >= goal;
+    return '<p class="goal-pill' + (done ? ' goal-done' : '') + '">' +
+      (done ? '⭐ Daily goal done — superstar!' : '🎯 Today: ⭐ ' + xpToday + ' / ' + goal) + '</p>';
+  }
+
   /* ---------- one island: rule card + games + mastery checklist ---------- */
 
   function renderIsland(id) {
@@ -173,6 +316,11 @@ window.GI = window.GI || {};
       '<div class="hero-scene"><span class="hero-emoji bob">' + isl.emoji + '</span></div>' +
       '<h1>' + isl.name + '</h1>' +
       '</div>' +
+
+      (GI.reviewDue(id)
+        ? '<div class="review-banner">🏴‍☠️ <b>Pirates returned to this island!</b> Win the review challenge to chase them away and keep your gold badge shining.' +
+          '<button class="btn btn-big btn-boss" id="go-review">⚔️ Review Challenge (' + GI.REVIEW_COUNT + ' questions)</button></div>'
+        : '') +
 
       '<div class="rule-card">' +
       '<h2>📖 ' + isl.rule.title + '</h2>' +
@@ -227,6 +375,46 @@ window.GI = window.GI || {};
     });
     var boss = document.getElementById('go-boss');
     if (boss && GI.bossReady(id)) boss.addEventListener('click', function () { renderBoss(id); });
+    var rev = document.getElementById('go-review');
+    if (rev) rev.addEventListener('click', function () { renderReview(id); });
+  }
+
+  /* ---------- the review challenge (spaced repetition) ---------- */
+
+  function renderReview(islandId) {
+    var isl = GI.getIsland(islandId);
+    var bank = GI.BANKS[islandId];
+    var pool = (bank.mcq || []).concat(bank.gap || []);
+    app.innerHTML = header(true, function () { renderIsland(islandId); }) +
+      '<div class="screen"><h2>🏴‍☠️ Review: ' + isl.name + '</h2><div id="game-box"></div></div>';
+    wireHeader(function () { renderIsland(islandId); });
+
+    GI.runQuiz({
+      island: isl, box: document.getElementById('game-box'),
+      pool: pool, count: GI.REVIEW_COUNT, timerSeconds: 30,
+      title: 'Get ' + GI.REVIEW_PASS + ' of ' + GI.REVIEW_COUNT + ' right to chase the pirates away!',
+      onDone: function (correct, total) {
+        var passed = correct >= GI.REVIEW_PASS;
+        GI.recordReviewResult(islandId, passed);
+        var box = document.getElementById('game-box');
+        if (passed) {
+          GI.sfx.badge();
+          box.innerHTML = '<div class="game-summary boss-win">' +
+            '<div class="gs-emoji">🏴‍☠️➡️🌊</div><h3>Pirates chased away!</h3>' +
+            '<p class="gs-score">' + correct + ' / ' + total + '</p>' +
+            '<p>Your ' + isl.emoji + ' badge shines gold again — see you at the next review!</p>' +
+            '<button class="btn btn-big" id="rv-map">Back to the map 🗺️</button></div>';
+          document.getElementById('rv-map').addEventListener('click', renderMap);
+        } else {
+          box.innerHTML = '<div class="game-summary">' +
+            '<div class="gs-emoji">💪</div><h3>The pirates are stubborn!</h3>' +
+            '<p class="gs-score">' + correct + ' / ' + total + ' — you need ' + GI.REVIEW_PASS + '</p>' +
+            '<p>Peek at the rule card below, play a quick game, and try the challenge again!</p>' +
+            '<button class="btn btn-big" id="rv-back">Back to the island</button></div>';
+          document.getElementById('rv-back').addEventListener('click', function () { renderIsland(islandId); });
+        }
+      }
+    });
   }
 
   /* ---------- the interactive "Your turn!" rule intro ---------- */
@@ -279,7 +467,8 @@ window.GI = window.GI || {};
       });
     }
 
-    if (intro.type === 'pick-article') {
+    if (intro.type === 'pick' || intro.type === 'pick-article') {
+      var choices = intro.choices || ['a', 'an', 'the'];
       var solved = 0;
       box.innerHTML = doneNote + '<p class="intro-prompt">✨ ' + intro.prompt + '</p>' +
         intro.items.map(function (item, ri) {
@@ -287,7 +476,7 @@ window.GI = window.GI || {};
             '<span class="intro-article-slot" id="ia-slot-' + ri + '">___</span>' +
             '<span class="intro-article-word">' + item.word + ' ' + item.emoji + '</span>' +
             '<span class="intro-article-btns">' +
-            ['a', 'an', 'the'].map(function (art) {
+            choices.map(function (art) {
               return '<button class="btn btn-small ia-btn" data-r="' + ri + '" data-a="' + art + '">' + art + '</button>';
             }).join('') + '</span></div>';
         }).join('');
@@ -370,6 +559,39 @@ window.GI = window.GI || {};
     });
   }
 
+  /* ---------- the Grammar Book: every learned rule, organised by aspect ---------- */
+
+  function renderBook() {
+    var chapters = {};
+    var order = [];
+    GI.allIslands().forEach(function (isl) {
+      if (!chapters[isl.aspect]) { chapters[isl.aspect] = []; order.push(isl.aspect); }
+      chapters[isl.aspect].push(isl);
+    });
+    var unlockedCount = GI.allIslands().filter(function (i) { return GI.island(i.id).ruleRead; }).length;
+
+    app.innerHTML = header(true) +
+      '<div class="screen"><h1>📖 My Grammar Book</h1>' +
+      '<p class="lead">Every rule you learn gets written into your book — ' + unlockedCount + ' of ' + GI.allIslands().length + ' collected. Perfect for revising before a school test!</p>' +
+      order.map(function (aspect) {
+        return '<h2 class="book-chapter">' + aspect + '</h2>' +
+          chapters[aspect].map(function (isl) {
+            var p = GI.island(isl.id);
+            if (!p.ruleRead) {
+              return '<div class="book-card book-locked">🔒 A secret rule sleeps here… explore <b>' + isl.name + '</b> to wake it!</div>';
+            }
+            return '<div class="book-card' + (p.mastered ? ' book-mastered' : '') + '">' +
+              '<h3>' + isl.emoji + ' ' + isl.rule.title + (p.mastered ? ' <span class="book-gold">🏆</span>' : '') + '</h3>' +
+              '<p class="rule-text">' + isl.rule.text + '</p>' +
+              '<p class="rule-example">' + isl.rule.example + '</p>' +
+              '<p class="rule-bangla">' + isl.rule.bangla + '</p>' +
+              '</div>';
+          }).join('');
+      }).join('') +
+      '</div>';
+    wireHeader();
+  }
+
   /* ---------- badges ---------- */
 
   function renderBadges() {
@@ -416,9 +638,29 @@ window.GI = window.GI || {};
           : '<button class="btn btn-small pc-unlock" data-id="' + isl.id + '">Unlock</button>') + '</td></tr>';
     }).join('');
 
+    var compassCard = '';
+    var c = GI.state.compass;
+    if (c && !c.applied) {
+      var rec = GI.getIsland(c.recommendedId);
+      var weakNames = c.weakIds.map(function (id) { return GI.getIsland(id).name; }).join(', ');
+      compassCard = '<div class="pc-compass">' +
+        '<h3>🧭 Captain\'s Compass recommendation</h3>' +
+        '<p>The placement quiz suggests starting at <b>' + rec.emoji + ' ' + rec.name + '</b>.' +
+        (weakNames ? ' It noticed some shakiness on: <b>' + weakNames + '</b> — those islands stay open for practice.' : '') + '</p>' +
+        '<p class="pc-note">Applying unlocks every island up to the suggestion. You can also ignore this and let the mastery chain do its work.</p>' +
+        '<button class="btn" id="pc-compass-apply">✅ Apply recommendation</button> ' +
+        '<button class="btn btn-small" id="pc-compass-dismiss">Dismiss</button>' +
+        '</div>';
+    }
+
+    var t = GI.state.today;
+    var xpToday = (t.day === GI.todayStr()) ? t.xp : 0;
+
     app.innerHTML = header(true) +
       '<div class="screen"><h1>👨‍👩‍👧 Parent Corner</h1>' +
-      '<p class="lead">Explorer: <b>' + GI.state.player.avatar + ' ' + esc(GI.state.player.name) + '</b> · ⭐ ' + GI.state.xp + ' XP</p>' +
+      '<p class="lead">Explorer: <b>' + GI.state.player.avatar + ' ' + esc(GI.state.player.name) + '</b> · ⭐ ' + GI.state.xp + ' XP' +
+      ' · 🔥 ' + GI.state.streak.count + '-day streak · today: ⭐ ' + xpToday + ' / ' + GI.state.settings.goalXP + '</p>' +
+      compassCard +
       '<div class="table-wrap"><table class="pc-table">' +
       '<tr><th>Island</th><th>Status</th><th>Answers</th><th>Accuracy</th><th>Games</th><th>Assign</th></tr>' +
       rows + '</table></div>' +
@@ -428,11 +670,41 @@ window.GI = window.GI || {};
       '<button class="btn" id="pc-export">⬇️ Export progress</button> ' +
       '<label class="btn" for="pc-import">⬆️ Import progress</label>' +
       '<input type="file" id="pc-import" accept=".json" hidden>' +
+      '<h3>🎯 Daily goal</h3>' +
+      '<p class="pc-note">A gentle stop point: when the day\'s stars reach the goal, the app celebrates and calls it a day (playing more stays allowed — Kumon wisdom: short daily practice beats long sessions).</p>' +
+      '<select id="pc-goal" class="btn">' +
+      [50, 100, 150, 200, 300, 500].map(function (g) {
+        return '<option value="' + g + '"' + (GI.state.settings.goalXP === g ? ' selected' : '') + '>⭐ ' + g + ' per day</option>';
+      }).join('') +
+      '</select>' +
       '<h3>⚙️ Settings</h3>' +
       '<button class="btn" id="pc-reset">🗑️ Reset everything</button>' +
       '<p id="pc-msg2" class="warn"></p>' +
       '</div>';
     wireHeader();
+
+    var applyBtn = document.getElementById('pc-compass-apply');
+    if (applyBtn) applyBtn.addEventListener('click', function () {
+      var rec = GI.state.compass.recommendedId;
+      var all = GI.allIslands();
+      for (var i = 0; i < all.length; i++) {
+        GI.island(all[i].id).parentUnlocked = true;
+        if (all[i].id === rec) break;
+      }
+      GI.state.compass.applied = true;
+      GI.save();
+      renderParent();
+    });
+    var dismissBtn = document.getElementById('pc-compass-dismiss');
+    if (dismissBtn) dismissBtn.addEventListener('click', function () {
+      GI.state.compass.applied = true;
+      GI.save();
+      renderParent();
+    });
+    document.getElementById('pc-goal').addEventListener('change', function () {
+      GI.state.settings.goalXP = Number(this.value);
+      GI.save();
+    });
 
     Array.prototype.forEach.call(app.querySelectorAll('.pc-unlock'), function (b) {
       b.addEventListener('click', function () {

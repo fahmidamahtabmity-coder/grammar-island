@@ -317,6 +317,61 @@ h3 { font-size: 1.1rem; margin: 12px 0 6px; }
 .intro-article-word { font-size: 1.15rem; font-weight: 700; min-width: 120px; }
 .intro-article-btns { display: flex; gap: 6px; }
 
+/* ---------- Phase 2: streak, toasts, goal ---------- */
+
+.topbar { flex-wrap: wrap; }
+.streak { font-weight: 800; color: #d96b00; padding: 0 4px; white-space: nowrap; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+  background: var(--card); border: 3px solid var(--sun); border-radius: 999px;
+  padding: 12px 22px; font-weight: 800; box-shadow: var(--shadow);
+  z-index: 50; max-width: 90vw; text-align: center;
+  animation: toast-in .35s ease-out;
+}
+.toast.gone { opacity: 0; transition: opacity .7s; }
+@keyframes toast-in { from { transform: translate(-50%, 30px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+.goal-pill {
+  text-align: center; font-weight: 800; margin: 12px auto 0; width: fit-content;
+  background: rgba(255,255,255,.85); border-radius: 999px; padding: 8px 18px;
+  box-shadow: var(--shadow);
+}
+.goal-pill.goal-done { background: #e9f9e4; border: 2px solid var(--leaf); color: var(--leaf); }
+
+/* ---------- Phase 2: review visits (pirates) ---------- */
+
+.island.due { border-color: #e0a400; background: #fff3cd; animation: island-bob 3s ease-in-out infinite; }
+.review-banner {
+  background: #fff3cd; border: 3px solid #e0a400; border-radius: var(--radius);
+  padding: 14px; margin: 12px 0; box-shadow: var(--shadow); line-height: 1.5;
+}
+.review-banner .btn { display: block; margin-top: 10px; }
+
+/* ---------- Phase 2: Grammar Book ---------- */
+
+.book-chapter { margin-top: 18px; color: #08536b; border-bottom: 3px solid rgba(255,255,255,.7); padding-bottom: 4px; }
+.book-card {
+  background: var(--card); border-radius: var(--radius); border: 3px solid #d9c98f;
+  padding: 14px; margin: 10px 0; box-shadow: var(--shadow);
+}
+.book-card.book-mastered { border-color: var(--sun); }
+.book-card.book-locked { background: rgba(255,255,255,.6); border-style: dashed; color: #5b7280; font-weight: 600; }
+.book-gold { font-size: 1rem; }
+.book-card .rule-bangla { margin-top: 8px; }
+
+/* ---------- Phase 2: Captain's Compass ---------- */
+
+.compass-result {
+  font-size: 2rem; font-weight: 900; margin: 14px 0; color: #08536b;
+  animation: pop-in .5s ease-out;
+}
+.compass-note { font-weight: 800; color: var(--sea-deep); margin-top: 12px; animation: pop-in .3s ease-out; }
+.pc-compass {
+  background: #eef7ff; border: 3px solid var(--sea-deep); border-radius: var(--radius);
+  padding: 14px; margin: 10px 0 14px; box-shadow: var(--shadow);
+}
+
 /* ---------- small screens ---------- */
 
 @media (max-width: 480px) {
