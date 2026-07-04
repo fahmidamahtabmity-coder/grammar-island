@@ -60,21 +60,21 @@ GI.CURRICULUM = {
         },
         {
           id: 'noun-proper',
-          name: 'Special Names',
+          name: 'Proper & Common Nouns',
           emoji: '🗺️',
-          tagline: 'Proper and common nouns',
+          tagline: 'Amina, Dhaka — capital letters!',
           aspect: 'Nouns',
           gate: ['np-q01', 'np-q12'],
           rule: {
-            title: 'Special names get a capital letter',
-            text: 'A proper noun is the special name of ONE person or place — it always starts with a capital letter. A common noun is a general name — no capital.',
+            title: 'Proper nouns get a capital letter',
+            text: 'A PROPER NOUN names ONE particular person or place — Amina, Dhaka — and always starts with a capital letter. A COMMON NOUN names any ordinary one — girl, city — and takes no capital.',
             example: '<b>Amina</b> is a girl. <b>Dhaka</b> is a city.',
-            exampleNote: 'Amina, Dhaka = proper (capital) · girl, city = common',
-            bangla: 'Proper noun হলো কোনো একজনের বা এক জায়গার বিশেষ নাম — সবসময় বড় হাতের অক্ষরে (capital letter) শুরু হয়। যেমন: Amina, Dhaka। Common noun হলো সাধারণ নাম — যেমন: girl, city।'
+            exampleNote: 'Amina, Dhaka = proper nouns (capital!) · girl, city = common nouns',
+            bangla: 'Proper noun হলো কোনো একজনের বা এক জায়গার নিজস্ব নাম — সবসময় বড় হাতের অক্ষরে (capital letter) শুরু হয়। যেমন: Amina, Dhaka। Common noun হলো সাধারণ নাম — যেমন: girl, city — capital লাগে না।'
           },
           intro: {
             type: 'tap-fix',
-            prompt: 'Oh no — 2 special names lost their capital letters! Tap them to fix them:',
+            prompt: 'Oh no — 2 proper nouns lost their capital letters! Tap them to fix them:',
             sentence: ['amina', 'lives', 'in', 'dhaka.'],
             targets: { 0: 'Amina', 3: 'Dhaka.' }
           },

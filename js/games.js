@@ -17,6 +17,29 @@ window.GI = window.GI || {};
   }
   function sample(arr, n) { return shuffle(arr).slice(0, n); }
 
+  /* No-repeat picker: remembers which item ids this island has already served
+     and prefers unseen ones, so the whole bank rotates before anything repeats
+     (play-test feedback: repeated questions get boring fast). */
+  function pickFresh(islandId, pool, n) {
+    var p = GI.island(islandId);
+    p.seen = p.seen || [];
+    var unseen = pool.filter(function (x) { return p.seen.indexOf(x.id) === -1; });
+    var chosen = shuffle(unseen).slice(0, n);
+    if (chosen.length < n) {
+      var extras = shuffle(pool.filter(function (x) { return chosen.indexOf(x) === -1; })).slice(0, n - chosen.length);
+      chosen = chosen.concat(extras);
+    }
+    chosen.forEach(function (x) {
+      var i = p.seen.indexOf(x.id);
+      if (i !== -1) p.seen.splice(i, 1);
+      p.seen.push(x.id);
+    });
+    var cap = Math.max(pool.length - n, 0);   // always keep ≥n ids "unseen"
+    if (p.seen.length > cap) p.seen = p.seen.slice(p.seen.length - cap);
+    GI.save();
+    return shuffle(chosen);
+  }
+
   var CHEERS = ['Brilliant! 🎉', 'Well done! ⭐', 'You got it! 🌟', 'Super! 💛', 'Amazing! 🏆'];
   var NUDGES = ['Ooh, so close — look again!', 'Almost! You will get the next one!', 'Good try! Keep going!', 'Not this one — but you are learning!'];
   function cheer() { return CHEERS[Math.floor(Math.random() * CHEERS.length)]; }
@@ -55,8 +78,8 @@ window.GI = window.GI || {};
 
   GI.games.catch = function (island, box, onDone) {
     var bank = GI.BANKS[island.id].catch;
-    var targets = sample(bank.words.filter(function (w) { return w.t; }), 6);
-    var others = sample(bank.words.filter(function (w) { return !w.t; }), 6);
+    var targets = pickFresh(island.id, bank.words.filter(function (w) { return w.t; }), 6);
+    var others = pickFresh(island.id, bank.words.filter(function (w) { return !w.t; }), 6);
     var queue = shuffle(targets.concat(others));
     var correct = 0, total = queue.length, done = 0, stopped = false;
 
@@ -116,7 +139,7 @@ window.GI = window.GI || {};
 
   GI.games.sort = function (island, box, onDone) {
     var bank = GI.BANKS[island.id].sort;
-    var items = sample(bank.items, 10);
+    var items = pickFresh(island.id, bank.items, 10);
     var i = 0, correct = 0;
 
     function next() {
@@ -154,7 +177,7 @@ window.GI = window.GI || {};
 
   GI.games.build = function (island, box, onDone) {
     var bank = GI.BANKS[island.id].build;
-    var items = sample(bank, 4);
+    var items = pickFresh(island.id, bank, 4);
     var i = 0, correct = 0;
 
     function next() {
@@ -222,7 +245,7 @@ window.GI = window.GI || {};
   /* opts: { island, pool, count, gameType, timerSeconds, onDone(correct,total) } */
   GI.runQuiz = function (opts) {
     var box = opts.box;
-    var questions = sample(opts.pool, opts.count);
+    var questions = pickFresh(opts.island.id, opts.pool, opts.count);
     var i = 0, correct = 0, timer = null;
 
     function next() {

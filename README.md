@@ -13,7 +13,7 @@ Or open `index.html` in any modern browser (Chrome, Edge, Firefox, Safari).
 
 - Onboarding: explorer name + avatar, parent PIN setup
 - Island map — Level 1 "Sentence Beach", 4 islands:
-  Naming Words → Special Names → Replacing Words → The Little Words (a/an/the)
+  Naming Words → Proper & Common Nouns → Replacing Words → The Little Words (a/an/the)
 - Rule cards in simple English with a বাংলা hint button
 - Games: Word Catcher, Sorting Baskets, Sentence Builder, Quick Quiz, Fill the Gap
 - Mastery gate: read rule + 3 game types + 30 answers at 80% + Boss Challenge 8/10

@@ -166,14 +166,16 @@ h3 { font-size: 1.1rem; margin: 12px 0 6px; }
   border-radius: var(--radius); border: 3px solid var(--sea-deep);
 }
 .catch-word {
-  position: absolute; top: -50px;
+  position: absolute; top: -56px;
   font: inherit; font-weight: 800; font-size: 1.1rem;
   background: var(--card); border: 3px solid var(--sun);
   border-radius: 999px; padding: 10px 16px; min-height: 46px;
   cursor: pointer; box-shadow: var(--shadow);
   animation: fall linear forwards;
 }
-@keyframes fall { to { top: 105%; } }
+/* transform-based fall: browsers cannot animate top between px and %,
+   which made words freeze or teleport on some devices (play-test bug) */
+@keyframes fall { from { transform: translateY(0); } to { transform: translateY(500px); } }
 .catch-word.caught { background: #d3f6c8; border-color: var(--leaf); }
 .catch-word.bad { background: #ffd9cf; border-color: var(--coral); }
 .catch-score { text-align: center; font-weight: 800; margin-top: 8px; font-size: 1.1rem; }
