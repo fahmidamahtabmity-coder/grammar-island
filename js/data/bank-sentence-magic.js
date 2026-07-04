@@ -52,7 +52,23 @@ GI.BANKS['sentence-magic'] = {
     { id: 'sm-q15', q: '“The parrot ___.” Which ending makes it a sentence?', opts: ['talks', 'green the', 'under'], a: 0,
       why: '“The parrot talks.” makes complete sense.' },
     { id: 'sm-q16', q: 'Which one makes complete sense?', opts: ['The moon shines at night.', 'moon the at shines', 'night moon the at'], a: 0,
-      why: 'Right order + complete idea = a real sentence.' }
+      why: 'Right order + complete idea = a real sentence.' },
+    { id: 'sm-q17', q: 'Which one is a sentence?', opts: ['The farmer grows rice.', 'grows the farmer', 'rice farmer the grows a'], a: 0,
+      why: 'Only the first is in the right order and makes complete sense.' },
+    { id: 'sm-q18', q: '“in the garden” — is this a sentence?', opts: ['No — we are left waiting for more', 'Yes — it is complete'], a: 0,
+      why: 'In the garden… WHAT happened? It is not complete.' },
+    { id: 'sm-q19', q: 'Fix it: “rina likes kites”', opts: ['Rina likes kites.', 'rina likes kites!', 'rina Likes Kites'], a: 0,
+      why: 'Capital R at the start and a full stop at the end.' },
+    { id: 'sm-q20', q: 'Pick the JUMBLE:', opts: ['sky the blue is', 'The sky is blue.', 'I see the sky.'], a: 0,
+      why: '“sky the blue is” — the words are out of order.' },
+    { id: 'sm-q21', q: 'A sentence begins with a capital letter and ends with…', opts: ['a stop mark', 'a comma', 'another capital'], a: 0,
+      why: 'Capital at the start, stop mark (. ? !) at the end.' },
+    { id: 'sm-q22', q: 'Which is a complete idea?', opts: ['The bell rings.', 'the big loud', 'under the big'], a: 0,
+      why: '“The bell rings.” tells us something whole.' },
+    { id: 'sm-q23', q: 'How would you finish this to make a sentence?  “My little sister ___”', opts: ['laughs a lot.', 'the doll red.', 'under happy.'], a: 0,
+      why: '“My little sister laughs a lot.” makes complete sense.' },
+    { id: 'sm-q24', q: 'Which one is correct?', opts: ['Rain falls from the clouds.', 'rain falls from the clouds', 'falls rain clouds the from'], a: 0,
+      why: 'Capital letter + right order + full stop.' }
   ],
 
   build: [

@@ -177,6 +177,253 @@ GI.CURRICULUM = {
           games: ['catch', 'sort', 'quiz', 'build']
         }
       ]
+    },
+    {
+      id: 'L2',
+      name: 'Builder Bay',
+      emoji: '🧱',
+      islands: [
+        {
+          id: 'verbs-doing',
+          name: 'Doing Words',
+          emoji: '🏃',
+          tagline: 'Verbs: run, eat, sing…',
+          aspect: 'Verbs',
+          gate: ['vd-q05', 'vd-q12'],
+          rule: {
+            title: 'Verbs are doing words',
+            text: 'A verb is a doing word — it tells what someone or something does.',
+            example: 'The boy <b>runs</b>. Birds <b>fly</b>. Amina <b>reads</b>.',
+            exampleNote: 'runs, fly, reads = the actions in each sentence',
+            bangla: 'Verb হলো কাজের শব্দ — কে কী করে তা বলে। যেমন: runs (দৌড়ায়), fly (ওড়ে), reads (পড়ে)।'
+          },
+          intro: {
+            type: 'tap-words',
+            prompt: 'Your turn! Tap the 2 doing words:',
+            sentence: ['Rina', 'sings', 'and', 'dances.'],
+            targets: { 1: 'action 🎤', 3: 'action 💃' }
+          },
+          games: ['catch', 'sort', 'quiz', 'build']
+        },
+        {
+          id: 'adjectives',
+          name: 'Describing Words',
+          emoji: '🎨',
+          tagline: 'Adjectives: red, big, sweet…',
+          aspect: 'Adjectives',
+          gate: ['aj-q05', 'aj-q12'],
+          rule: {
+            title: 'Adjectives describe',
+            text: 'An adjective is a describing word — it tells what a person or thing is like: its colour, size, taste or feeling.',
+            example: 'a <b>red</b> ball · a <b>big</b> elephant · <b>sweet</b> mangoes',
+            exampleNote: 'red = colour · big = size · sweet = taste',
+            bangla: 'Adjective হলো বর্ণনার শব্দ — কোনো কিছু কেমন তা বলে (রং, আকার, স্বাদ, অনুভূতি)। যেমন: red (লাল), big (বড়), sweet (মিষ্টি)।'
+          },
+          intro: {
+            type: 'tap-words',
+            prompt: 'Your turn! Tap the 2 describing words:',
+            sentence: ['The', 'little', 'girl', 'has', 'a', 'red', 'kite.'],
+            targets: { 1: 'size 🐭', 5: 'colour 🔴' }
+          },
+          games: ['catch', 'sort', 'quiz', 'build']
+        },
+        {
+          id: 'adj-degrees',
+          name: 'Big, Bigger, Biggest!',
+          emoji: '🐘',
+          tagline: 'Comparing with -er and -est',
+          aspect: 'Adjectives',
+          gate: ['ad-q01', 'ad-q02'],
+          rule: {
+            title: 'Describing words can compare',
+            text: 'To compare TWO things, add -er (bigger). To say something beats ALL the others, add -est (biggest).',
+            example: 'tall → tall<b>er</b> → tall<b>est</b>',
+            exampleNote: 'one: tall · comparing two: taller · champion of all: tallest',
+            bangla: 'তুলনা করতে adjective বদলায়: দুটির মধ্যে তুলনায় -er (bigger), আর সবার সেরা বোঝাতে -est (biggest)। যেমন: tall → taller → tallest।'
+          },
+          intro: {
+            type: 'pick',
+            prompt: 'Your turn! Pick the right form:',
+            choices: ['tall', 'taller', 'tallest'],
+            items: [
+              { word: 'Rina is ___ than Amina.', emoji: '', a: 'taller' },
+              { word: 'Karim is the ___ in the class.', emoji: '', a: 'tallest' },
+              { word: 'The tree is very ___.', emoji: '🌳', a: 'tall' }
+            ]
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        },
+        {
+          id: 'adverbs',
+          name: 'How-Words',
+          emoji: '🐢',
+          tagline: 'Adverbs: slowly, today, here…',
+          aspect: 'Adverbs',
+          gate: ['av-q01', 'av-q03'],
+          rule: {
+            title: 'Adverbs tell how, when, where',
+            text: 'An adverb tells HOW, WHEN or WHERE something happens. Many how-words end in -ly.',
+            example: 'The turtle walks <b>slowly</b>. We play <b>outside</b>. I read <b>daily</b>.',
+            exampleNote: 'slowly = how · outside = where · daily = when',
+            bangla: 'Adverb বলে কাজটা কীভাবে (how), কখন (when) বা কোথায় (where) হয়। অনেক adverb -ly দিয়ে শেষ হয়। যেমন: slowly (ধীরে), outside (বাইরে), daily (প্রতিদিন)।'
+          },
+          intro: {
+            type: 'tap-words',
+            prompt: 'Your turn! Tap the word that tells HOW the turtle walks:',
+            sentence: ['The', 'turtle', 'walks', 'slowly.'],
+            targets: { 3: 'HOW 🐢' }
+          },
+          games: ['catch', 'sort', 'quiz', 'build']
+        },
+        {
+          id: 'prepositions',
+          name: 'Where-Words',
+          emoji: '📦',
+          tagline: 'in, on, under, at…',
+          aspect: 'Prepositions',
+          gate: ['pr-q02', 'pr-q06'],
+          rule: {
+            title: 'Prepositions tell where (and when)',
+            text: 'A preposition is a little word that tells where something is — in, on, under, behind — or when it happens: at 5 o’clock, on Friday, in June.',
+            example: 'The cat is <b>under</b> the table. The book is <b>on</b> the shelf.',
+            exampleNote: 'under = below it · on = on top of it',
+            bangla: 'Preposition ছোট শব্দ — কোথায় বা কখন বোঝায়: in (ভিতরে), on (উপরে), under (নিচে), behind (পিছনে); সময়ে: at 5 o’clock, on Friday, in June।'
+          },
+          intro: {
+            type: 'pick',
+            prompt: 'Your turn! Where is it? Pick the right little word:',
+            choices: ['in', 'on', 'under'],
+            items: [
+              { word: 'The apple is ___ the plate.', emoji: '🍎', a: 'on' },
+              { word: 'The cat hides ___ the bed.', emoji: '🐈', a: 'under' },
+              { word: 'The fish swims ___ the water.', emoji: '🐟', a: 'in' }
+            ]
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        },
+        {
+          id: 'conjunctions',
+          name: 'Joining Words',
+          emoji: '🔗',
+          tagline: 'and, but, or, because',
+          aspect: 'Conjunctions',
+          gate: ['cj-q01', 'cj-q04'],
+          rule: {
+            title: 'Conjunctions join',
+            text: 'A conjunction joins words or sentences: and (adds), but (shows a difference), or (gives a choice), because (gives a reason).',
+            example: 'I like mangoes <b>and</b> bananas. I ran <b>because</b> I was late.',
+            exampleNote: 'and = + · but = ↔ · or = choice · because = reason',
+            bangla: 'Conjunction শব্দ বা বাক্য জোড়া দেয়: and (এবং), but (কিন্তু), or (অথবা), because (কারণ)। যেমন: I like mangoes and bananas.'
+          },
+          intro: {
+            type: 'pick',
+            prompt: 'Your turn! Pick the joining word that fits:',
+            choices: ['and', 'but', 'because'],
+            items: [
+              { word: 'I like tea ___ biscuits.', emoji: '🍪', a: 'and' },
+              { word: 'I ran fast ___ I missed the bus.', emoji: '🚌', a: 'but' },
+              { word: 'She is happy ___ she won.', emoji: '🏆', a: 'because' }
+            ]
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        },
+        {
+          id: 'determiners',
+          name: 'Counting & Pointing Words',
+          emoji: '👉',
+          tagline: 'this, those, some, many…',
+          aspect: 'Determiners',
+          gate: ['dt-q03', 'dt-q01'],
+          rule: {
+            title: 'Little words point and count',
+            text: 'Before a noun, little words can point — this, that, these, those — or count: some, any, many (countable) and much (uncountable).',
+            example: '<b>This</b> mango is sweet. I have <b>many</b> friends and not <b>much</b> time.',
+            exampleNote: 'this = one, near · many = countable things · much = uncountable stuff',
+            bangla: 'Noun-এর আগে ছোট শব্দ দেখিয়ে দেয় (this এই, that ঐ, these এইগুলো, those ঐগুলো) বা পরিমাণ বলে। গোনা যায় এমন জিনিসে many (many pens), গোনা যায় না এমন জিনিসে much (much water)।'
+          },
+          intro: {
+            type: 'tap-words',
+            prompt: 'Your turn! Tap the pointing word:',
+            sentence: ['These', 'mangoes', 'are', 'sweet.'],
+            targets: { 0: 'points to many, near 👉' }
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        },
+        {
+          id: 'nouns-treasures',
+          name: 'Noun Treasures',
+          emoji: '💎',
+          tagline: 'children, a flock, king & queen',
+          aspect: 'Nouns',
+          gate: ['n2-q01', 'n2-q03'],
+          rule: {
+            title: 'Nouns keep secrets',
+            text: 'Nouns have treasures: group names (a team of players), special plurals that break the +s rule (child → children), and boy–girl pairs (king → queen).',
+            example: 'a <b>flock</b> of birds · one child, two <b>children</b> · the king and the <b>queen</b>',
+            exampleNote: 'group name · special plural · boy–girl pair',
+            bangla: 'Noun-এর কিছু গোপন রূপ আছে: দলের নাম (team, flock, herd), অনিয়মিত plural (child → children, man → men, foot → feet), আর ছেলে-মেয়ে জোড়া (king → queen, lion → lioness)।'
+          },
+          intro: {
+            type: 'tap-fix',
+            prompt: 'One word is wrong! Tap it to fix the special plural:',
+            sentence: ['one', 'child,', 'two', 'childs'],
+            targets: { 3: 'children' }
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        },
+        {
+          id: 'tense-simple',
+          name: 'Now, Before, Later',
+          emoji: '⏰',
+          tagline: 'play · played · will play',
+          aspect: 'Tenses',
+          gate: ['ts-q01', 'ts-q04'],
+          rule: {
+            title: 'Verbs tell WHEN',
+            text: 'Verbs change with time: now or every day (I play), before (I played), later (I will play).',
+            example: 'Today I <b>play</b>. Yesterday I <b>played</b>. Tomorrow I <b>will play</b>.',
+            exampleNote: 'present · past (-ed) · future (will + verb)',
+            bangla: 'Verb সময় বোঝায়: এখন বা প্রতিদিন (I play), আগে (I played), পরে (I will play)। যেমন: আজ play, গতকাল played, আগামীকাল will play।'
+          },
+          intro: {
+            type: 'pick',
+            prompt: 'Your turn! Pick the right time form:',
+            choices: ['play', 'played', 'will play'],
+            items: [
+              { word: 'Yesterday I ___ cricket.', emoji: '⏪', a: 'played' },
+              { word: 'Every day I ___ cricket.', emoji: '▶️', a: 'play' },
+              { word: 'Tomorrow I ___ cricket.', emoji: '⏩', a: 'will play' }
+            ]
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        },
+        {
+          id: 'verb-match',
+          name: 'Match the Verb',
+          emoji: '🤝',
+          tagline: 'She plays · they play',
+          aspect: 'Agreement',
+          gate: ['sv-q05', 'sv-q03'],
+          rule: {
+            title: 'The verb must match its subject',
+            text: 'One person or thing → the verb wears an s (She plays). Many — or I/you → no s (They play). And: I am, one is, many are.',
+            example: 'She <b>plays</b>. They <b>play</b>. I <b>am</b> · he <b>is</b> · we <b>are</b>.',
+            exampleNote: 'one → +s · many → no s',
+            bangla: 'Subject আর verb মিলতে হবে: একজন হলে verb-এ s (She plays), অনেকে বা I/you হলে s নেই (They play)। I-এর সাথে am, একজনের সাথে is, অনেকের সাথে are।'
+          },
+          intro: {
+            type: 'pick',
+            prompt: 'Your turn! Pick the matching verb:',
+            choices: ['am', 'is', 'are'],
+            items: [
+              { word: 'I ___ a student.', emoji: '🙋', a: 'am' },
+              { word: 'Rina ___ my friend.', emoji: '👧', a: 'is' },
+              { word: 'We ___ happy.', emoji: '👥', a: 'are' }
+            ]
+          },
+          games: ['sort', 'gap', 'quiz', 'build']
+        }
+      ]
     }
   ]
 };

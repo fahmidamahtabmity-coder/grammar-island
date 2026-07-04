@@ -251,12 +251,12 @@ window.GI = window.GI || {};
   /* ---------- the island map ---------- */
 
   function renderMap() {
-    var level = GI.CURRICULUM.levels[0];
     app.innerHTML = header(false) +
       '<div class="screen map-screen" id="map-screen">' +
-      '<h1 class="map-title">' + level.emoji + ' ' + level.name + '</h1>' +
-      '<div class="map">' +
-      level.islands.map(function (isl, idx) {
+      GI.CURRICULUM.levels.map(function (level) {
+        return '<h1 class="map-title">' + level.emoji + ' ' + level.name + '</h1>' +
+          '<div class="map">' +
+          level.islands.map(function (isl, idx) {
         var p = GI.island(isl.id);
         var unlocked = GI.isUnlocked(isl.id);
         var due = GI.reviewDue(isl.id);
@@ -270,8 +270,9 @@ window.GI = window.GI || {};
           '<span class="island-tag">' + isl.tagline + '</span>' +
           '<span class="island-state">' + icon + label + '</span>' +
           '</button>';
+          }).join('') +
+          '</div>';
       }).join('') +
-      '</div>' +
       goalPill() +
       '<p class="map-more">⛵ More islands are being discovered… (coming in the next update!)</p>' +
       '</div>';
